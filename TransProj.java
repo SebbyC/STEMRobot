@@ -1,8 +1,9 @@
-package TransProcessor;
+package com.chapter4.pa;
 import java.util.Scanner;
 
 
 // 10 / 30 / 2017 Implented TransReader into a Class file.
+//10 / 31 / 2017 ADDED BREAKS FOR NO PARAMETER CASES
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,7 +28,8 @@ public class TransProj
 	int lineCounter = 1;
 	int lineNumber = 1;
 	String Delimiter;
-	String Name;
+	String firstName;
+	String lastName;
 	
 	PrintWriter outFile;
 		
@@ -107,6 +109,23 @@ public class TransProj
 				}
 			}
 		
+		if(line.length() > 2)
+		{
+		if(line.substring(0,2).equalsIgnoreCase("/N"))
+			{
+			String tempDelim = " ";
+			lineScanner.useDelimiter(tempDelim);
+			if(lineScanner.hasNext())
+				lineScanner.next();
+			if(lineScanner.hasNext())				
+				firstName = lineScanner.next();
+			if(lineScanner.hasNext())
+				lastName = lineScanner.next();
+		System.out.println("Hi  " + firstName + " " + lastName);
+		continue;
+			}
+		}
+		
 		lineScanner.useDelimiter(Delimiter);
 		//String word = lineScanner.next();
 		//System.out.println(word);
@@ -115,9 +134,11 @@ public class TransProj
 		while (lineScanner.hasNext())
 
 		{
-
+				
+					
 			String input = lineScanner.next();
 			int loops;
+			
 			//int lineNumber = 1;
 			
 			
@@ -258,36 +279,27 @@ public class TransProj
 					System.out.println(input3 * input4);
 					break;
 				case "CRP":
-					char char1 = 'a';
-					char char2 = 'b';
+					String char1 = "";
+					String char2 = "";
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
 							break;						
 					}
-					try {
-						char1 = lineScanner.next().charAt(1);
-						}
-					catch(InputMismatchException e) 
-					{
-						outFile.println("Line : " + lineNumber);
-						outFile.println("\tError: No parameter");
-					}
+					
+						 char1 = lineScanner.next().substring(0,1);
+						
+				
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
 							break;						
 					}
-					try {
-						 char1 = lineScanner.next().charAt(1);
-							}
-						catch(InputMismatchException e) 
-						{
-							outFile.println("Line : " + lineNumber);
-							outFile.println("\tError: No parameter");
-						}
+					
+						  char2 = lineScanner.next().substring(0,1);
+				
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
@@ -295,11 +307,13 @@ public class TransProj
 							break;						
 					}
 					String strReplace = lineScanner.next();
-					strReplace.toLowerCase();
+					strReplace = strReplace.toLowerCase();
 				
-					String strReplaced = strReplace.replace(char1, char2);
+					String strReplaced = strReplace.replaceAll(char1, char2);
 					System.out.println(strReplaced);
 						break;
+						
+						
 				case "MRI":
 					if(!lineScanner.hasNext())
 					{
@@ -330,7 +344,6 @@ public class TransProj
 					input5 = Integer.parseInt(num3);
 					input6 = Integer.parseInt(num4);
 					input7 = Integer.parseInt(num5);
-					
 					for (int i = 0; i < input7; i++)
 					{	
 						randomInt = (int)(Math.random() * input6) + input5;
@@ -339,8 +352,7 @@ public class TransProj
 					}
 					System.out.println();
 						break;
-
-					
+						
 		}
   lineNumber++;
 	}
