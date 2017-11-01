@@ -1,4 +1,4 @@
-package com.chapter4.pa;
+package TransProcessor;
 import java.util.Scanner;
 
 
@@ -258,8 +258,8 @@ public class TransProj
 					System.out.println(input3 * input4);
 					break;
 				case "CRP":
-					char char1 = 'l';
-					char char2 = 'd';
+					char char1 = 'a';
+					char char2 = 'b';
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
@@ -300,6 +300,47 @@ public class TransProj
 					String strReplaced = strReplace.replace(char1, char2);
 					System.out.println(strReplaced);
 						break;
+				case "MRI":
+					if(!lineScanner.hasNext())
+					{
+						outFile.println("Line : " + lineNumber) ;
+						outFile.println("\tError: No Parameter ");
+							break;						
+					}
+					String num3 = lineScanner.next();
+					if(!lineScanner.hasNext())
+					{
+						outFile.println("Line : " + lineNumber) ;
+						outFile.println("\tError: No Parameter ");
+							break;						
+					}
+					String num4 = lineScanner.next();
+					if(!lineScanner.hasNext())
+					{
+						outFile.println("Line : " + lineNumber) ;
+						outFile.println("\tError: No Parameter ");
+							break;						
+					}
+					String num5 = lineScanner.next();
+					
+					int input5 = 0;
+					int input6 = 0;
+					int input7 = 0;
+					int randomInt = 0;
+					input5 = Integer.parseInt(num3);
+					input6 = Integer.parseInt(num4);
+					input7 = Integer.parseInt(num5);
+					
+					for (int i = 0; i < input7; i++)
+					{	
+						randomInt = (int)(Math.random() * input6) + input5;
+						System.out.print(randomInt + " ");
+					
+					}
+					System.out.println();
+						break;
+
+					
 		}
   lineNumber++;
 	}
