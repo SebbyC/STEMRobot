@@ -1,4 +1,10 @@
-package com.chapter4.pa;
+package TransProject;
+//*****************************************************
+//  Author: Sebastian Colon / Kellen Tison
+//
+///
+//
+//********************************************
 import java.util.Scanner;
 
 
@@ -23,26 +29,29 @@ public class TransProj
 	Scanner transScanner;
 	Scanner lineScanner;
 	Random Gen = new Random();
-	DecimalFormat DF = new DecimalFormat("#.###");
+	DecimalFormat DF = new DecimalFormat("#.##");
 	String line = "";
 	int lineCounter = 1;
 	int lineNumber = 1;
 	String Delimiter;
-	String firstName;
-	String lastName;
-	
-	PrintWriter outFile;
+	String firstName = "";
+	String lastName = "";
+	double actions = 0;
+	double invalidActions = 0;
+	int totalLines = 0;
+	File Myfile1;
+	static PrintWriter outFile;
 		
 	
 	
-	public TransProj(File Myfile1) 
+	public TransProj(File Myfile) 
 	{
-	
+	  
 		try
 		{
-			transScanner = new Scanner(Myfile1);
+			transScanner = new Scanner(Myfile);
 			outFile = new PrintWriter("D:\\TransData.txt");
-			
+			Myfile1 = Myfile;
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("Invalid File:");
@@ -58,7 +67,7 @@ public class TransProj
 	}
 	
 	
-	public static boolean ifOperator(String Op)
+	public static boolean ifOperator(String Op) // CHECK IF VALID ENUM
 	{
 		
 		for( Operators F : Operators.values())
@@ -70,19 +79,84 @@ public class TransProj
 		return false;
 		
 		
+		
 			
 	}
 	
 	
 	
+	public void lineCounter() throws IOException // COUNTS ALL LINES IN THE FILE
+	{
+		
+		while(transScanner.hasNextLine())
+		{
+			transScanner.nextLine();
+			totalLines++;
+		
+			
+			
+		}
+		System.out.println(totalLines);
+		transScanner.reset();
+		transScanner = new Scanner(Myfile1);
+	}
 	
-	
-	
+	public void nameChecker() throws IOException  // SCANS WHOLE FILE FOR NAME
+	{
+		
+		if(firstName.length() == 0)
+		{
+		       while(transScanner.hasNext()) {
+				
+		    	   line = transScanner.nextLine();
+		    	   lineScanner = new Scanner(line);
+		    	   if(line.length() > 2)
+				{
+				if(line.substring(0,2).equalsIgnoreCase("/N"))
+					{
+
+					lineScanner.useDelimiter(" ");
+					if(lineScanner.hasNext())
+						lineScanner.next();
+					if(lineScanner.hasNext())				
+						firstName = lineScanner.next();
+					if(lineScanner.hasNext())
+						lastName = lineScanner.next();
+				System.out.println("Hi  " + firstName + " " + lastName);
+				continue;
+					}
+				}
+//				if(firstName.length() == 0)
+//				{
+//					line = transScanner.nextLine();
+//				
+//					
+//				}
+				if(firstName.length() > 0)
+				{
+					transScanner.reset();
+					break;
+				}
+		     }
+		}
+		
+		
+		transScanner.reset();
+		transScanner = new Scanner(Myfile1);
+	}
 	
 	public void TransProcessor() throws IOException
 
 	{
 //		PrintWriter outFile = new PrintWriter("D:\\TransData.txt");
+		Scanner scan = new Scanner(System.in);
+		nameChecker();
+		if(firstName.length() == 0)
+		{			System.out.println("Please enter a Name: " );
+				firstName = scan.nextLine();
+		}
+		scan.close();
+			
 		while (transScanner.hasNext())
 		{
 			
@@ -108,24 +182,10 @@ public class TransProj
 				 break;
 				}
 			}
+			
 		
-		if(line.length() > 2)
-		{
-		if(line.substring(0,2).equalsIgnoreCase("/N"))
-			{
-			String tempDelim = " ";
-			lineScanner.useDelimiter(tempDelim);
-			if(lineScanner.hasNext())
-				lineScanner.next();
-			if(lineScanner.hasNext())				
-				firstName = lineScanner.next();
-			if(lineScanner.hasNext())
-				lastName = lineScanner.next();
-		System.out.println("Hi  " + firstName + " " + lastName);
-		continue;
-			}
-		}
-		
+
+		//lineScanner2.close();
 		lineScanner.useDelimiter(Delimiter);
 		//String word = lineScanner.next();
 		//System.out.println(word);
@@ -153,19 +213,24 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;	
+						break;
+
 						
-						}
+					}
 					loopInput = lineScanner.next();
+					System.out.println(firstName + " FRE CASE:");
 					if(loopInput.substring(0,1).equals("\""))
 					{
-						for( int i = 0; i < loops; i++)
-						System.out.println(loopInput);
+						for( int i = 0; i < loops; i++)							
+						System.out.println("\t" + loopInput);
 					break;
 					}
 						else
 							{
-							outFile.println("Line : " + lineNumber + " \nInvalid Parameter: " + input);
+							
+							outFile.println(firstName +" Line : " + lineNumber + " \nInvalid Parameter: " + input);
+							invalidActions++;
 							break;
 							}
 					
@@ -176,7 +241,8 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;	
+						break;
 						
 						}
 					String num1 = lineScanner.next();
@@ -184,7 +250,8 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;
+						break;
 						
 						}
 					String num2 = lineScanner.next();
@@ -197,6 +264,8 @@ public class TransProj
 					catch(NumberFormatException e) {
 						outFile.println("Line : " + lineNumber);
 						outFile.println("\tInvalid Parameter: " + num1);
+						invalidActions++;
+						break;
 					}
 					//Added try and catch for num2 10/30/17
 					try {
@@ -205,9 +274,12 @@ public class TransProj
 					catch(NumberFormatException e) {
 						outFile.println("Line : " + lineNumber);
 						outFile.println("\tInvalid Parameter: " + num2);
+						invalidActions++;
+						break;
 					}
 					int randomNum = int1 + Gen.nextInt(Math.abs(int2));
-					System.out.println(randomNum);
+					System.out.println(firstName + " RDI CASE: \n\t" + randomNum);
+					actions++;
 					break;
 					
 				case "MSR":
@@ -215,7 +287,8 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;	
+						break;
 						
 						}
 					String input2 = lineScanner.next();
@@ -228,12 +301,14 @@ public class TransProj
 					 catch(NumberFormatException e) {
 						 outFile.println("Line : " + lineNumber);
 						 outFile.println("\tInvalid Parameter " + input2);
+						 invalidActions++;
 						 break;
 						 
 					 }
 					 {
 						double sqrtNum = Math.sqrt(Dub);
-						System.out.println(sqrtNum);
+						System.out.println(firstName + " MSR CASE :\n\t" + sqrtNum);
+						actions++;
 						break;
 					}
 					
@@ -242,7 +317,8 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;	
+						break;
 						
 						}
 					String dub1 = lineScanner.next();
@@ -250,7 +326,8 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;
+						invalidActions++;	
+						break;
 						
 					}
 					String dub2 = lineScanner.next();
@@ -264,6 +341,8 @@ public class TransProj
 						
 						outFile.println("Line : " + lineNumber);
 						 outFile.println("\tInvalid Parameter " + dub1);
+						 invalidActions++;
+						 break;
 					}
 					//Added try and catch for dub2 10/30/17
 					try {
@@ -274,44 +353,57 @@ public class TransProj
 						 
 						outFile.println("Line : " + lineNumber);
 						 outFile.println("\tInvalid Parameter " + dub2);
+						 invalidActions++;
+						 break;
 						 
 					 }
-					System.out.println(input3 * input4);
+					System.out.println(firstName + " MDB CASE : \n\t" + (input3 * input4));
 					break;
 				case "CRP":
-					String char1 = "";
-					String char2 = "";
+					char char1 = 'a' ;
+					 char char2 = 'a' ;
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;						
+						invalidActions++;	
+						break;						
 					}
+					String input1 = lineScanner.next();
+					if(input1.length() > 2)	  
+						char1 = input1.charAt(1);
 					
-						 char1 = lineScanner.next().substring(0,1);
+					
+						 
 						
 				
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;						
+						invalidActions++;	
+						break;						
 					}
-					
-						  char2 = lineScanner.next().substring(0,1);
+					input2 = lineScanner.next();
+					if(input2.length() > 2)	  
+					char2 = input2.charAt(1);
 				
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
+						invalidActions++;
 							break;						
 					}
 					String strReplace = lineScanner.next();
 					strReplace = strReplace.toLowerCase();
+					char1 = Character.toLowerCase(char1);
+					char2 = Character.toLowerCase(char2);
 				
-					String strReplaced = strReplace.replaceAll(char1, char2);
-					System.out.println(strReplaced);
-						break;
+					String strReplaced = strReplace.replace(char1, char2);
+					System.out.println(firstName + " CRP CASE \n\t" + strReplaced);
+					actions++;	
+					break;
 						
 						
 				case "MRI":
@@ -319,21 +411,24 @@ public class TransProj
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;						
+						invalidActions++;	
+						break;						
 					}
 					String num3 = lineScanner.next();
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;						
+						invalidActions++;	
+						break;						
 					}
 					String num4 = lineScanner.next();
 					if(!lineScanner.hasNext())
 					{
 						outFile.println("Line : " + lineNumber) ;
 						outFile.println("\tError: No Parameter ");
-							break;						
+						invalidActions++;	
+						break;						
 					}
 					String num5 = lineScanner.next();
 					
@@ -344,14 +439,16 @@ public class TransProj
 					input5 = Integer.parseInt(num3);
 					input6 = Integer.parseInt(num4);
 					input7 = Integer.parseInt(num5);
+					System.out.println(firstName + " MRI CASE: ");
 					for (int i = 0; i < input7; i++)
 					{	
 						randomInt = (int)(Math.random() * input6) + input5;
-						System.out.print(randomInt + " ");
+						System.out.print("\t" + randomInt + " ");
 					
 					}
 					System.out.println();
-						break;
+					actions++;	
+					break;
 						
 		}
   lineNumber++;
@@ -359,6 +456,17 @@ public class TransProj
 		
 		
 } // ENDS TRANSREADER METHOD
+		outFile.println("Invalid Transactions : " + invalidActions);
+		outFile.println("Valid Transactions : " + actions);
+		//System.out.println(actions+  "\t" + invalidActions);
+//		double ErrorPerc = (invalidActions / actions);
+//		//System.out.println(ErrorPerc);
+//		String ErrorPerc1 = String.valueOf(ErrorPerc);
+//		//System.out.println(ErrorPerc1); 
+//		ErrorPerc1 = DF.format(ErrorPerc);
+//		// System.out.println(ErrorPerc1);
+//		 ErrorPerc = Double.parseDouble(ErrorPerc1) * 100;
+//		outFile.println("Error Perct : " + (ErrorPerc) + "% ");
 		outFile.close();
 }
 	}
